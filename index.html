@@ -38,17 +38,20 @@
 <body>
   <h1>researchmap → JSONL 変換ブックマークレット</h1>
   <p>
-    researchmapのプロフィールページを開いた状態で、このブックマークレットをクリックすると、インポート用のJSONLファイルがダウンロードされます。
+    共著者の業績を自分の業績としてコピーする方法です。
   </p>
 
   <h2>ステップ</h2>
   <ol>
-    <li><strong>user_id</strong> を入力してください（例: <code>B000000079</code>）</li>
+    <li><strong>researchmap会員ID</strong> を入力してください（例: <code>B000000079</code>）</li>
     <li>「ブックマークレットを生成」ボタンを押してください</li>
     <li>生成されたリンクをブックマークバーにドラッグしてください</li>
+    <li>コピーしたい共著者の業績を researchmap で表示してください</li>
+    <li>さきほどブックマークに追加したブックマークレットをクリックするとファイルがダウンロードされます</li>
+    <li>自分の researchmap ページのインポート機能からインポートしてください</li>
   </ol>
 
-  <label for="userId">user_id:</label>
+  <label for="userId">researchmap会員ID:</label>
   <input type="text" id="userId" placeholder="B0000000XX">
   <button onclick="generateBookmarklet()">ブックマークレットを生成</button>
 
@@ -58,7 +61,7 @@
     function generateBookmarklet() {
       const userId = document.getElementById('userId').value.trim();
       if (!userId) {
-        alert('user_id を入力してください。');
+        alert('researchmap会員ID を入力してください。');
         return;
       }
 
