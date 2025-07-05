@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>researchmap JSONL 変換ブックマークレット生成</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      line-height: 1.6;
+      margin: 2em;
+    }
+    label, input, button {
+      font-size: 1em;
+    }
+    input {
+      width: 200px;
+      margin-right: 1em;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+    }
+    #bookmarklet-link {
+      display: inline-block;
+      margin-top: 1em;
+      padding: 0.5em 1em;
+      background: #007acc;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    #bookmarklet-link:hover {
+      background: #005f99;
+    }
+  </style>
+</head>
+<body>
+  <h1>researchmap → JSONL 変換ブックマークレット</h1>
+  <p>
+    researchmapのプロフィールページを開いた状態で、このブックマークレットをクリックすると、インポート用のJSONLファイルがダウンロードされます。
+  </p>
+
+  <h2>ステップ</h2>
+  <ol>
+    <li><strong>user_id</strong> を入力してください（例: <code>B000000079</code>）</li>
+    <li>「ブックマークレットを生成」ボタンを押してください</li>
+    <li>生成されたリンクをブックマークバーにドラッグしてください</li>
+  </ol>
+
+  <label for="userId">user_id:</label>
+  <input type="text" id="userId" placeholder="B0000000XX">
+  <button onclick="generateBookmarklet()">ブックマークレットを生成</button>
+
+  <p id="output"></p>
+
+  <script>
+    function generateBookmarklet() {
+      const userId = document.getElementById('userId').value.trim();
+      if (!userId) {
+        alert('user_id を入力してください。');
+        return;
+      }
+
+      const code = `(async()=>{const USER_ID="${userId}";function convertToApiUrl(url){return url.replace("researchmap.jp/","api.researchmap.jp/");}function transformJsonObject(original){return{"insert":{"type":original["@type"]||"unknown_type","user_id":USER_ID},"merge":Object.fromEntries(Object.entries(original).filter(([k])=>!["@context","@type","@id"].includes(k)))}}const url=window.location.href;if(!url.includes("researchmap.jp/")){alert("researchmapのプロフィールページで実行してください");return;}const apiUrl=convertToApiUrl(url);try{const res=await fetch(apiUrl);if(!res.ok)throw new Error("HTTP error");const data=await res.json();const converted=transformJsonObject(data);const jsonlLine=JSON.stringify(converted);const blob=new Blob([jsonlLine+"\\n"],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="converted.jsonl";a.click();}catch(e){alert("失敗: "+e);}})();`;
+
+      const link = document.createElement('a');
+      link.id = 'bookmarklet-link';
+      link.href = 'javascript:' + encodeURIComponent(code);
+      link.textContent = '📥 JSONLブックマークレット（ドラッグして登録）';
+
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+      output.appendChild(link);
+    }
+  </script>
+</body>
+</html>
